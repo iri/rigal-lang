@@ -3,7 +3,7 @@
 #
 
 # C compiler to use (Compiler path can be changed by the user)
-CCFLAGS = -g -D LE -m32 -I/usr/include/malloc/
+CCFLAGS = -g -D LE -m32 -fcommon -I/usr/include/malloc/
 PCA =  cc $(CCFLAGS) -D STATIC_CCFLAGS='"$(CCFLAGS)"' -c -D xsun=1 -I../include/
 # Remove -DLE for Big-endian architectures (Little-endian is now the default in the Makefile)!
 # Specify -Dbbs for BBS-version of scaner (LaTeX version is default)!
@@ -28,12 +28,9 @@ CCF_SRC = defsun3.o ley_.o scan.o scanmif.o usemod.o c1.o c2.o c3.o c4.o nef2.o 
 DISTLIB =  defsun3.c ley_.c scan.c scanmif.c usemod.c c1.c c2.c c3.c c4.c nef2.c ou2.c sevice.c
 
 # All include files
-INCLIB_SRC = c1.h define.h defpage.h ley.h scan.h cim.h def180.h nef2.h usemod.h globrig.h
-# INCLIB_SRC = ../include/c1.h ../include/define.h  \
-#  ../include/defpage.h ../include/ley.h \
-#  ../include/scan.h ../include/cim.h \
-#  ../include/def180.h   ../include/nef2.h \
-#  ../include/usemod.h   ../include/globrig.h
+INCLIB_SRC = ../include/c1.h ../include/define.h ../include/defpage.h ../include/ley.h \
+	../include/scan.h ../include/cim.h ../include/def180.h ../include/nef2.h \
+	../include/usemod.h ../include/globrig.h
 
 #--------------------------------------------------------
 # TARGET DEFINITIONS
@@ -45,7 +42,7 @@ all: bins riglib.a anrig genrigd rig_lint test clean
 bins: bin rc ic v
 
 bin:
-	mkdir ../bin
+	mkdir -p ../bin
 
 rc: $(RCF_SRC) rc_.o
 	cc $(CCFLAGS)  -o ../bin/rc rc_.o $(RCF_SRC)
@@ -58,7 +55,7 @@ v: $(RCF_SRC) v.o
 
 riglib.a: $(CCF_SRC)
 	@echo '*Starting creating library'
-	mkdir ../lib
+	mkdir -p ../lib
 	rm -f ../lib/riglib.a
 	ar rv ../lib/riglib.a $(CCF_SRC)
 	ranlib ../lib/riglib.a
@@ -142,13 +139,13 @@ fullclean: clean
 	rm -rf ../bin ../lib ../*.tar
 
 ##--------------------------------------
-.c.o:   $(INCLIB_SRC)
+%.o: %.c $(INCLIB_SRC)
 	$(PCA) $< -o $@
 ##----------------------------------------
 # Prepare distribution
-mkdist$(RFILE)$(RDIR):
-	@echo '*** to prepare for distribution write make mkdist RFILE=fff RDIR=/u/vaden/xyz/xyz/'
 mkdist:
+	@test -n "$(RFILE)" -a -n "$(RDIR)" || \
+		{ echo '*** to prepare for distribution write make mkdist RFILE=fff RDIR=/u/vaden/xyz/xyz/'; exit 1; }
 	(cd $(RDIR);\
 	../bin/rc $(RFILE);\
 	../bin/anrig;\

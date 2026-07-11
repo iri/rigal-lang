@@ -405,6 +405,9 @@ _L1:
         V.fistack[V.fistacklen - 1].curline++;
     }
 
+    if (*a_long != '\0' && a_long[strlen(a_long) - 1] == '\r')
+      a_long[strlen(a_long) - 1] = 0;
+
     V.fistack[V.fistacklen - 1].curline++;
     /* line counter */
     len = strlen(a_long);

@@ -1,0 +1,13 @@
+-- Regression test: #TAIL strips the first element off a list via
+-- pattern matching, binding $E to the head and $R to the remainder.
+#START
+    $A := (. ALPHA BETA GAMMA DELTA .);
+    PRINT $A;
+    $B := #TAIL($A);
+    PRINT $B;
+##
+
+#TAIL
+    (. $E (* $R!. := $K *) .)
+    / RETURN $R /
+##

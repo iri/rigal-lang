@@ -98,12 +98,18 @@ rig_lint: ../lint/rig_lint.rig ../bin/rc ../lib/riglib.a ../bin/anrig ../bin/gen
 	(cd ../lint;../bin/rc rig_lint -c -P '-O';cd ..)
 	-mv ../lint/rig_lint ../bin/
 
-test: ../test/rigcrf.rig  ../bin/rc ../lib/riglib.a ../bin/anrig ../bin/genrigd
+test: ../test/rigcrf.rig ../test/tail.rig ../test/tail.expected ../bin/rc ../lib/riglib.a ../bin/anrig ../bin/genrigd
 	(cd ../test; \
 	 ../bin/rc rigcrf; \
 	 ../bin/ic rigcrf rigcrf; \
 	 ../bin/rc  rigcrf -c; \
 	 ./rigcrf rigcrf)
+	(cd ../test; \
+	 rm -f tail.rsc tail.out; \
+	 ../bin/rc tail && \
+	 ../bin/ic tail tail > tail.out 2>&1 && \
+	 diff -u tail.expected tail.out && \
+	 rm -f tail.rsc tail.out)
 
 ##------------------ Hidden possibilities
 z:       anrigz genrigz
